@@ -18,12 +18,23 @@ jobs:
             "https://aa6fdf0bbd8ec5018.app.workbuddy.host/?sharecode=2YGOCFSQFH"
             "https://url-fetch-proxy.app.workbuddy.host/?sharecode=URA34JXSBU"
           )
+          FAILS=0
           END=$((SECONDS + 10800))   # 跑满 3 小时后退出，下一棒接上
           while [ $SECONDS -lt $END ]; do
             ts=$(date -u +"%F %T")
             for u in "${URLS[@]}"; do
               code=$(curl -s -o /dev/null -w "%{http_code}" -m 30 "$u")
               echo "$ts HTTP $code  $u"
+              # 2xx/3xx 视为正常，其余计为失败（只累计，不打断循环）
+              if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+                FAILS=$((FAILS+1))
+                echo "::warning::访问失败：$u → HTTP $code"
+              fi
             done
             sleep 180
           done
+          if [ $FAILS -gt 0 ]; then
+            echo "::error::本轮共 $FAILS 次访问失败，请检查服务状态"
+            exit 1   # job 标红 → 触发 GitHub 失败邮件（成功运行默认不发邮件）
+          fi
+          echo "本轮 360 次访问全部正常"
