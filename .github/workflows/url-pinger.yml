@@ -17,6 +17,7 @@ jobs:
             "https://npc-tunnel-client.app.workbuddy.host/?sharecode=EREAFNURUR"
             "https://aa6fdf0bbd8ec5018.app.workbuddy.host/?sharecode=2YGOCFSQFH"
             "https://url-fetch-proxy.app.workbuddy.host/?sharecode=URA34JXSBU"
+            "https://npc-tunnel-client-39357.app.workbuddy.host/api/status?sharecode=ZL546S6MK2"
           )
           FAILS=0
           ts=$(date -u +"%F %T")
